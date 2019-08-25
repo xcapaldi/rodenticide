@@ -1,0 +1,96 @@
+# i3status configuration file.
+# see "man i3status" for documentation.
+
+# This is a decent default for the i3status command.
+# You may need to make some modifications to make it operational on your system.
+# I will update it in more detail in the future.
+
+# It is important that this file is edited as UTF-8.
+# The following line should contain a sharp s:
+# ß
+# If the above line is not correctly displayed, fix your editor first!
+
+general {
+        colors = true
+        color_good = "#98971a"
+        color_degraded = "#d79921"
+        color_bad = "#d65d0e"
+#	color_separator = ""
+        interval = 5
+}
+
+order += "volume master"
+order += "cpu_usage"
+# order += "ipv6"
+# order += "disk /" 
+# order += "cpu_temperature 0"
+# order += "run_watch DHCP"
+# order += "run_watch VPN"
+order += "wireless wlp1s0"
+order += "ethernet eth0"
+order += "battery 0"
+#order += "load"
+order += "tztime local"
+
+wireless wlp1s0 {
+        format_up = "W: %quality at %essid (%bitrate)"
+        format_down = "W: down"
+}
+
+ethernet eth0 {
+        # if you use %speed, i3status requires root privileges
+        format_up = "E: %ip (%speed)"
+        format_down = "E: down"
+}
+
+battery 0 {
+        # format = "%status %percentage %remaining"
+        format = "%status %percentage"
+        format_down = "No battery"
+        status_chr = "⚡"
+        status_bat = "🔋 "
+        status_full = "☻ "
+        low_threshold = 30
+        threshold_type = percentage
+}
+
+run_watch DHCP {
+        pidfile = "/var/run/dhclient*.pid"
+}
+
+run_watch VPN {
+        pidfile = "/var/run/vpnc/pid"
+}
+
+tztime local {
+        format = "%Y-%m-%d %H:%M:%S"
+}
+
+load {
+        format = "%1min"
+}
+
+disk "/" {
+        format = "%avail/%total"
+}
+
+cpu_temperature 0 {
+        format = "T: %degrees °C"
+        max_threshold: 75
+        format_above_threshold: "Warning T above threshold: %degrees °C"
+        path = "/sys/devices/platform/coretemp.0/hwmon/hwmon3/temp1_input"
+}
+
+cpu_usage {
+        format = "CPU: %usage"
+        max_threshold = "95"
+        degraded_threshold = "90"
+}
+
+volume master {
+        format = "♪: %volume"
+        format_muted = "♪: muted (%volume)"
+        device = "default"
+        mixer = "Master"
+        mixer_idx = 0
+}  
