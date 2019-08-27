@@ -82,6 +82,12 @@ I used [this video](https://www.youtube.com/watch?v=2GbSCdoyO_I) and then I modi
 ## TODO
 
 * Write standard issue configuration.
+** modal interface
+** dmenu command palette
 * Write type 4o configuration
+** rofi window switcher
+** rofi application launcher (with terminal apps!)
+** rofi command palette
+** dunst?
 * Write i3status detailed configuration.
 * Develop 3i colorscheme.

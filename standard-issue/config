@@ -365,31 +365,28 @@ bindsym $mod+y mode $mode_layout
 # --------------------------------------------------------------------------------------
 # }}}
 
-# {{{2 volume mode
+# {{{2 brightness mode
 # --------------------------------------------------------------------------------------
-# I use amixer and alsamixer to control my audio.
-# This commands are set with that in mind but it should not be hard to modify them for
-# your setup.
-# If you keyboard has dedicated audio keys, you can bind them in default mode if you
+# I use xbacklight to control monitor brightness on the laptop.
+# You may need to look up how to get it working properly for your particular laptop.
+# If you keyboard has dedicated brightness keys, you can bind them in default mode if you
 # prefer.
-# They would be something like this: XF86AudioRaiseVolume.
+# They would be something like this: XF86MonBrightnessUp.
 
-set $mode_volume "[j] -vol [k] +vol [m]ute mi[x]er"
+set $mode_brightness "[j] dim screen [k] brighten screen"
 
 mode $mode_volume { 
-        bindsym j exec amixer -q set 'Master' 5%- unmute
-        bindsym k exec amixer -q set 'Master' 5%+ unmute
-        bindsym m exec amixer -q set 'Master' toggle
-	bindsym x exec urxvt -e alsamixer; $mode_default
+        bindsym j exec xbacklight -inc 10
+        bindsym k exec xbacklight -dec 10
 
         # back to normal: Enter or Escape or y or $mod+r
         bindsym Return $mode_default
         bindsym Escape $mode_default
 	bindsym q      $mode_default
-        bindsym $mod+a $mode_default
+        bindsym $mod+s $mode_default
 }
 
-bindsym $mod+a mode $mode_volume
+bindsym $mod+s mode $mode_brightness
 # --------------------------------------------------------------------------------------
 # }}}
 
