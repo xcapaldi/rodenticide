@@ -37,13 +37,13 @@ All the configurations were written in vim and use the vim folding functionality
 If you are using vim, you can enable folding by typing :set foldmethod=marker
 Then you can close folds with zc and open with zo.
 
-### type 3
+### simple
 
 This configuration is a slight modification of the default configuration.
 The setup is made slightly more modal but remains otherwise unchanged.
 This is good if you still want to handle the configuration fully yourself but you'd like to use the formatting from 3i.
 
-### standard issue
+### standard
 
 This configuration includes helpful modes for audio, screen brightness and multiple screens.
 It add details for the scratchpad configuration.
@@ -51,11 +51,16 @@ It suggests colors for improved focus.
 This take advantage of most of the features available in i3 for a general configuration.
 Still in progress.
 
-### type 4o
+### advanced
 
-This is an advanced configuration for people who want absolute focus on their system.
-i3bar is replaced with dunst.
-Potentially dmenu is replaced with rofi (undecided yet).
+This configuration still only required dmenu and i3bar which are installed with i3.
+However, it takes advantage of shell and python scripts to get more power out of the window manager.
+Still in progress.
+
+### complex
+
+This configuration requires external dependencies like pywal and rofi.
+You can pick and choose from components to add to your own configuration.
 Still in progress.
 
 ## FAQ

@@ -1,9 +1,4 @@
-#             _  
-# _|_  ._  _  _) 
-#  |_\/|_)(/_ _) 
-#    / |  
-
-# 3i: type 3
+# 3i [standard]
 
 # i3 config file (v4)
 
@@ -213,10 +208,15 @@ bindsym $mod+Shift+Right move right
 # If you've set indicator in your colors, you will see this graphically.
 
 # toggle split orientation
-bindsym $mod+t split toggle
+bindsym $mod+o split toggle
 
-# toggle between stacking/tabbed/horizontal split/vertical split
-bindsym $mod+x layout toggle all
+# If you don't have an indicator, I recommend using two individual keybindings
+
+# split in horizontal orientation
+# bindsym $mod+b split h
+
+# split in vertical orientation
+# bindsym $mod+v split v
 
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
@@ -279,7 +279,7 @@ bindsym $mod+Shift+0 move container to workspace $ws10
 # --------------------------------------------------------------------------------------
 # }}}
 
-# {{{ resize mode
+# {{{2 resize mode
 # --------------------------------------------------------------------------------------
 # Note that you can also use the mouse in default mode for this.
 
@@ -315,7 +315,7 @@ bindsym $mod+r mode $mode_resize
 # --------------------------------------------------------------------------------------
 # }}}
 
-# {{{ session manager mode
+# {{{2 session manager mode
 # --------------------------------------------------------------------------------------
 # We can give the mode a complex name because the entire name will appear in the bar.
 # This allows us to display all the mode specific keybindings for easy reference.
@@ -343,5 +343,81 @@ bindsym $mod+Shift+e mode $mode_session
 # --------------------------------------------------------------------------------------
 # }}}
 
+# {{{2 layout mode
+# --------------------------------------------------------------------------------------
+set $mode_layout "[s]tacking [t]abbed s[p]lit"
+
+mode $mode_layout { 
+        # These bindings trigger as soon as you enter the layout mode.
+        # This mode is different than the previous two because we need exit after any
+        # input from the user.
+        # We just tell it to run $mode_default after our command.
+        bindsym s layout stacking; $mode_default
+        bindsym t layout tabbed; $mode_default
+        bindsym p layout toggle split; $mode_default
+
+        # back to normal: Enter or Escape or q or $mod+y
+        bindsym Return $mode_default
+        bindsym Escape $mode_default
+	bindsym q      $mode_default
+        bindsym $mod+y $mode_default
+}
+
+bindsym $mod+y mode $mode_layout
+# --------------------------------------------------------------------------------------
+# }}}
+
+# {{{2 brightness mode
+# --------------------------------------------------------------------------------------
+# I use xbacklight to control monitor brightness on the laptop.
+# You may need to look up how to get it working properly for your particular laptop.
+# If you keyboard has dedicated brightness keys, you can bind them in default mode if you
+# prefer.
+# They would be something like this: XF86MonBrightnessUp.
+
+set $mode_brightness "[j] dim screen [k] brighten screen"
+
+mode $mode_volume { 
+        bindsym j exec xbacklight -inc 10
+        bindsym k exec xbacklight -dec 10
+
+        # back to normal: Enter or Escape or y or $mod+s
+        bindsym Return $mode_default
+        bindsym Escape $mode_default
+	bindsym q      $mode_default
+        bindsym $mod+s $mode_default
+}
+
+bindsym $mod+s mode $mode_brightness
+# --------------------------------------------------------------------------------------
+# }}}
+
+# {{{2 volume mode
+# --------------------------------------------------------------------------------------
+# I use amixer and alsamixer to control my audio.
+# This commands are set with that in mind but it should not be hard to modify them for
+# your setup.
+# If you keyboard has dedicated audio keys, you can bind them in default mode if you
+# prefer.
+# They would be something like this: XF86AudioRaiseVolume.
+
+set $mode_volume "[j] -vol [k] +vol [m]ute mi[x]er"
+
+mode $mode_volume { 
+	bindsym j exec amixer -q set 'Master' 5%- unmute
+	bindsym k exec amixer -q set 'Master' 5%+ unmute
+	bindsym m exec amixer -q set 'Master' toggle
+	bindsym x exec urxvt -e alsamixer; $mode_default
+
+	# back to normal: Enter or Escape or y or $mod+r
+	bindsym Return $mode_default
+	bindsym Escape $mode_default
+	bindsym q      $mode_default
+	bindsym $mod+a $mode_default
+}
+
+bindsym $mod+a mode $mode_volume
+# --------------------------------------------------------------------------------------
+# }}}
 # --------------------------------------------------------------------------------------
 # }}}
