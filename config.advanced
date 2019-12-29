@@ -1,4 +1,4 @@
-# 3i [standard]
+# 3i [advanced]
 
 # i3 config file (v4)
 
@@ -21,34 +21,51 @@ set $mod Mod4
 # Font for window titles. 
 # Will also be used by the bar unless a different font is used in the bar {} block below.
 # The number represents the font size.
-font pango:monospace 8
+# font pango:monospace 8
 
 # This alternative font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
-# font pango:DejaVu Sans Mono 8
+# Just enabling this here won't make your system look decent.
+# Remember you'll have to configure the font in your terminal emulator separately from
+# your i3 config.
+font pango:DejaVu Sans Mono 8
 # --------------------------------------------------------------------------------------
 # }}}
 
 # {{{ colors
 # --------------------------------------------------------------------------------------
-# Here are the default i3 colors which you can change to suit your tastes.
+# Pull colors from Xresources
+# The hex color code is a fallback in case the color cannot be pulled from Xresources.
+# These are set to the gruvbox colorscheme by default as a fallback.
+set_from_resource $bg          i3wm.color0   #282828
+set_from_resource $red         i3wm.color1   #cc241d
+set_from_resource $green       i3wm.color2   #98971a
+set_from_resource $yellow      i3wm.color3   #d79921
+set_from_resource $blue        i3wm.color4   #458588
+set_from_resource $purple      i3wm.color5   #b16286
+set_from_resource $aqua        i3wm.color6   #689d6a
+set_from_resource $gray        i3wm.color7   #a89984
+set_from_resource $altgray    i3wm.color8   #928374
+set_from_resource $altred     i3wm.color9   #fb4934
+set_from_resource $altgreen   i3wm.color10  #b8bb26
+set_from_resource $altyellow  i3wm.color11  #fabd2f
+set_from_resource $altblue    i3wm.color12  #83a598
+set_from_resource $altpurple  i3wm.color13  #d3869b
+set_from_resource $altaqua    i3wm.color14  #8ec07c
+set_from_resource $fg          i3wm.color15  #ebdbb2
+
 # The indicator color highlights the edge that a new client will appear if you select a
 # particular orientation.
 # Clients that you have not set an orientation will not highlight the border.
 
-# You can pull your colors from Xresources so that i3 matches your colorscheme.
-# set_from_resource $black i3wm.color0 #000000
-# The hex color code is a fallback in case the color cannot be pulled from Xresources.
-# Then you can use the $black variable in your configuration.
+# class                   border   backgr.  text indicator  child_border
+client.focused            $purple  $purple  $bg  $aqua      $purple
+client.focused_inactive   $bg      $bg      $fg  $bg        $bg
+client.unfocused          $bg      $bg      $fg  $bg        $bg
+client.urgent             $green   $green   $bg  $altgreen  $green
+client.placeholder        $bg      $gray    $bg  $bg        $bg
 
-# class                   border    backgr.   text      indicator child_border
-client.focused            #4c7899   #285577   #ffffff   #2e9ef4   #285577
-client.focused_inactive   #333333   #5f676a   #ffffff   #484e50   #5f676a
-client.unfocused          #333333   #222222   #888888   #292d2e   #222222
-client.urgent             #2f343a   #900000   #ffffff   #900000   #900000
-client.placeholder        #000000   #0c0c0c   #ffffff   #000000   #0c0c0c
-
-client.background         #ffffff
+client.background         $bg
 # --------------------------------------------------------------------------------------
 # }}}
 
@@ -62,24 +79,28 @@ bar {
         status_command i3status
 	# i3bar uses same font as titlebars unless you specify a different font here.
 	# This is helpful if you want the font size to differ.
-	 font pango:monospace 8
+	# font pango:monospace 8
 	# You can change the symbol which separates the components of i3status
 	separator_symbol "|"
-	# You can also have the bar appear at the top on the bottom
-	position bottom
+	# You can also have the bar appear on the bottom
+	position top
+	# Make the bar only visible while pressing the modifier key
+	mode dock
+	hidden_state hide
+	modifier $mod
 	# The colors can be configured just like the rest of i3.
 	# You can still use the color variables you defined previously to make
 	# switching colorschemes much easier.
     	colors {
-        	background   #000000
-        	statusline   #ffffff
-        	separator    #666666
-
-        	focused_workspace    #4c7899   #285577   #ffffff
-        	active_workspace     #333333   #5f676a   #ffffff
-        	inactive_workspace   #333333   #222222   #888888
-        	urgent_workspace     #2f343a   #900000   #ffffff
-        	binding_mode         #2f343a   #900000   #ffffff
+        	background   $bg
+        	statusline   $fg
+        	separator    $fg
+#                                    border background text
+        	focused_workspace    $bg    $purple    $bg
+        	active_workspace     $gray  $bg        $gray
+        	inactive_workspace   $gray  $bg        $gray
+        	urgent_workspace     $bg    $purple    $bg
+        	binding_mode         $bg    $green     $bg
    	}
 }
 
@@ -127,11 +148,20 @@ set $term urxvt
 # start a terminal
 bindsym $mod+Return exec $term
 
+# bring up a floating calculator window running python
+for_window [title="pycalc"] floating enable
+bindsym $mod+Shift+c exec urxvt -title pycalc -e python3 -i -c 'from math import *'
+
 # kill focused window
 bindsym $mod+Shift+q kill
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
+
+# we want to hide the bar and only make it visible while pressing the mod key
+# i.e. for improved focus
+bindsym $mod+Shift+f bar mode toggle
+
 # --------------------------------------------------------------------------------------
 # }}}
 
@@ -145,10 +175,10 @@ floating_modifier $mod
 bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu='dmenu \
 								-i \
 								-p 'launch' \
-								-nb '#222222' \
-								-sf '#eeeeee' \
-								-sb '#005577' \
-								-nf '#bbbbbb'' 
+								-nb $bg \
+								-sf $bg \
+								-sb $purple \
+								-nf $fg' 
 
 # -i  >> list items case insensitive
 # -p  >> prompt
@@ -204,14 +234,18 @@ bindsym $mod+Shift+Down  move down
 bindsym $mod+Shift+Up    move up
 bindsym $mod+Shift+Right move right
 
+# by default new windows will just have a border of 3 pixels
+# but we can toggle the border with simple command
+default_border pixel 3
+bindsym $mod+b border toggle 3
+
 # The split bindings determine where the next new client will open in the workspace.
 # If you've set indicator in your colors, you will see this graphically.
 
 # toggle split orientation
 bindsym $mod+o split toggle
 
-# If you don't have an indicator, I recommend using two individual keybindings
-
+# If you don't have an indicator, I recommend using two individual keybindings:
 # split in horizontal orientation
 # bindsym $mod+b split h
 
@@ -224,6 +258,16 @@ bindsym $mod+f fullscreen toggle
 # toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
 
+# we set the minimum and maximum floating size
+# we leave the minimum size unconstrained
+# you should set the maximum floating size to the size of your primary display
+# minus your borders (and titles) or smaller to be safe
+floating_minimum_size -1 x -1
+floating_maximum_size 1000 x 600
+
+# toggle sticky on floating window
+bindsym $mod+s sticky toggle
+
 # change focus between tiling / floating windows
 bindsym $mod+space focus mode_toggle
 
@@ -233,7 +277,6 @@ bindsym $mod+p focus parent
 # focus the child container
 bindsym $mod+c focus child
 # --------------------------------------------------------------------------------------
-
 # }}}
 
 # {{{3 workspaces
@@ -263,6 +306,9 @@ bindsym $mod+8 workspace $ws8
 bindsym $mod+9 workspace $ws9
 bindsym $mod+0 workspace $ws10
 
+# pressing the same workspace button bounces back to the previous workspace
+workspace_auto_back_and_forth yes
+
 # move focused container to workspace
 bindsym $mod+Shift+1 move container to workspace $ws1
 bindsym $mod+Shift+2 move container to workspace $ws2
@@ -274,6 +320,19 @@ bindsym $mod+Shift+7 move container to workspace $ws7
 bindsym $mod+Shift+8 move container to workspace $ws8
 bindsym $mod+Shift+9 move container to workspace $ws9
 bindsym $mod+Shift+0 move container to workspace $ws10
+# --------------------------------------------------------------------------------------
+# }}}
+
+# {{{3 scratchpad
+# --------------------------------------------------------------------------------------
+# The scratchpad is a hidden workspace which can contain any number of windows that
+# can be summoned anywhere
+
+# make the currently focused window a scratchpad
+bindsym $mod+Shift+x move scratchpad
+
+# show the first scratchpad window
+bindsym $mod+x scratchpad show
 # --------------------------------------------------------------------------------------
 # }}}
 # --------------------------------------------------------------------------------------
@@ -367,28 +426,31 @@ bindsym $mod+y mode $mode_layout
 # --------------------------------------------------------------------------------------
 # }}}
 
-# {{{2 brightness mode
+# {{{2 mark mode
 # --------------------------------------------------------------------------------------
-# I use xbacklight to control monitor brightness on the laptop.
-# You may need to look up how to get it working properly for your particular laptop.
-# If you keyboard has dedicated brightness keys, you can bind them in default mode if you
-# prefer.
-# They would be something like this: XF86MonBrightnessUp.
+# We can mark windows and jump to them or swap them with others:
+set $mode_mark "[m]ark [r]ecall [s]ummon s[w]ap"
 
-set $mode_brightness "[j] dim screen [k] brighten screen"
-
-mode $mode_volume { 
-        bindsym j exec xbacklight -inc 10
-        bindsym k exec xbacklight -dec 10
-
-        # back to normal: Enter or Escape or y or $mod+s
+mode $mode_mark {
+	# These bindings trigger as soon as you enter the mark mode.
+	# This mode always exits and then calls the i3-input which actually handles the rest.
+	# mark window
+	bindsym m $mode_default; exec i3-input -F 'mark %s' -l 1 -P 'Mark: '
+	# jump to mark
+	bindsym r $mode_default; exec i3-input -F '[con_mark="%s"] focus' -l 1 -P 'Recall: '
+	# move mark to current workspace
+	bindsym s $mode_default; exec i3-input -F '[con_mark="%s"] move workspace current' -l 1 -P 'Summon: '
+	# swap mark with current window
+	bindsym w $mode_default; exec i3-input -F 'swap container with mark %s' -l 1 -P 'Swap: '
+        
+	# back to normal: Enter or Escape or q or $mod+y
         bindsym Return $mode_default
         bindsym Escape $mode_default
 	bindsym q      $mode_default
-        bindsym $mod+s $mode_default
+        bindsym $mod+m $mode_default
 }
 
-bindsym $mod+s mode $mode_brightness
+bindsym $mod+m mode $mode_mark
 # --------------------------------------------------------------------------------------
 # }}}
 
@@ -406,7 +468,7 @@ set $mode_volume "[j] -vol [k] +vol [m]ute mi[x]er"
 mode $mode_volume { 
 	bindsym j exec amixer -q set 'Master' 5%- unmute
 	bindsym k exec amixer -q set 'Master' 5%+ unmute
-	bindsym m exec amixer -q set 'Master' toggle
+	bindsym m exec amixer -q set 'Master' toggle; $mode_default
 	bindsym x exec urxvt -e alsamixer; $mode_default
 
 	# back to normal: Enter or Escape or y or $mod+r

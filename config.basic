@@ -1,4 +1,4 @@
-# 3i [simple]
+# 3i [basic]
 
 # i3 config file (v4)
 
@@ -13,7 +13,7 @@
 
 # First set the primary modifier key to be used.
 # Mod1 is alt and Mod4 is the Windows key.
-# I recommend Mod4 if you use Emacs because alt (meta) may cause conflicts.
+# I recommend Mod4 if you use Emacs because alt (meta) will cause conflicts.
 set $mod Mod4
 
 # {{{ fonts
@@ -122,7 +122,6 @@ set $term urxvt
 # You can select with the mouse to copy and middle-click to paste.
 # Urxvt can also be extended with perl scripts to suit your needs.
 # Also note, you can  change the appearance of urxvt but I won't cover that here.
-# The 3i configuration focuses on i3, i3status, dmenu, i3lock, and maybe dunst.
 
 # start a terminal
 bindsym $mod+Return exec $term
