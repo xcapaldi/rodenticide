@@ -24,6 +24,8 @@ I assume that if you are using i3, you are quite happy modifying a configuration
 If you aren't about that life, I recommend using vanilla Gnome actually.
 The design philosophy is also about a highly focused desktop environment with much less configuration.
 
+![Screenshot of environment](screenshot.png)
+
 ### What 3i is not
 
 This is not an eyecandy configuration.
