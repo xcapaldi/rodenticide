@@ -3,7 +3,6 @@
 ![3i](3i_resized.png)
 
 Opinionated and advanced configuration for the i3 window manager with smarter defaults.
-Optional configurations allow for highly focused workflow.
 
 ## Philosophy
 
@@ -20,11 +19,14 @@ I wanted to write a configuration which is not only educational but lays down a 
 2. Minimal memorization
 3. Minimal dependencies
 
+The main goal is to have a decent default configuration that illustrates a variety of features available in i3.
+I assume that if you are using i3, you are quite happy modifying a configuration file to suite your needs and that is fully expected here.
+If you aren't about that life, I recommend using vanilla Gnome actually.
+The design philosophy is also about a highly focused desktop environment with much less configuration.
+
 ### What 3i is not
 
 This is not an eyecandy configuration.
-3i is designed to optimize focus and workflow.
-Even the colors I suggest and the forthcoming 3i colorscheme are designed to improve productivity, not to go on unixporn.
 I encourage you to rice it as you see fit.
 That is just not the purpose of this configuration as I've written it.
 
@@ -45,11 +47,10 @@ This is good if you still want to handle the configuration fully yourself but yo
 
 ### advanced
 
-This configuration includes helpful modes for audio and multiple screens.
+This configuration includes a helpful mode for audio.
 It add details for the scratchpad configuration.
 It suggests colors for improved focus.
 This take advantage of most of the features available in i3 for a general configuration.
-Still in progress.
 
 ## FAQ
 
@@ -71,16 +72,3 @@ Yes.
 ### I want to draw anime girls too. Where can I learn?
 
 I used [this video](https://www.youtube.com/watch?v=2GbSCdoyO_I) and then I modified the hair using [this guide](https://www.animeoutline.com/how-to-draw-anime-and-manga-hair-female/).
-
-## TODO
-
-* Write standard issue configuration.
-** modal interface
-** dmenu command palette
-* Write type 4o configuration
-** rofi window switcher
-** rofi application launcher (with terminal apps!)
-** rofi command palette
-** dunst?
-* Write i3status detailed configuration.
-* Develop 3i colorscheme.
