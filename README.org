@@ -1,0 +1,611 @@
+#+TITLE: Rodenticide
+#+AUTHOR: Xavier Capaldi
+
+Opinionated configuration for the [[https://i3wm.org/][i3 window manager]] inspired by [[https://ratpoison.nongnu.org/][ratpoison]].
+If you like the accessibility and wide-adoption of i3wm but love the design and workflow of [[https://ratpoison.nongnu.org/][ratpoison]], this is the config for you.
+The config is structured as a literate org-mode document but the configs have also been tangled out for use.
+
+* Why
+I love the accessibility and workflow of ratpoison but I was sparked to updated this configuration with the news that Fedora is now shipping an [[https://spins.fedoraproject.org/en/i3/][i3 spin]].
+This is exciting because it is (as far as I know) the first time a tiling window manager is shipped as an official spin in one of the major three distributions (Debian, Ubuntu, Fedora).
+
+i3 excels above other window managers in terms of accessibility.
+It comes with a bar, system status, modal keybindings and screen locker.
+[[https://tools.suckless.org/dmenu/][Dmenu]] is shipped as an application launcher.
+The Fedora spin adds [[https://dunst-project.org/][dunst]] as a notification daemon preinstalled as well.
+i3 is capable of handling floating, tiled and stacked windows in variety of formats.
+To achieve similar features in something like [[https://herbstluftwm.org/][herbstluftwm]] (another really impressive window manager) requires significant configuration.
+
+My workflow with ratpoison typically revolves around only three windows: emacs, a browser and a terminal emulator.
+These are kept fullscreen most of the time.
+If I need to use an application that has many small/floating windows ([[https://imagej.net/software/fiji/][FIJI]]/[[http://gwyddion.net/][Gwyddion]]) or if I need access to a system tray, I open [[https://joewing.net/projects/jwm/][Joe's Window Manager]] temporarily.
+
+We can't reproduce this workflow exactly but we can get pretty close and we can take advantage of other features that i3 supports like scratchpads/iconified windows, keybinding modes, mixed layouts and workspaces.
+
+* Goals
+- Take advantage of the built-in i3 functionality for a better workflow.
+- Take advantage of i3's unique features to minimize the need for memorizing keybindings.
+- Keep the configuration simple and retain defaults wherever possible.
+  
+* How to use
+1. Install i3wm.
+2. Move ~i3.config~ to ~$HOME/.config/i3/config~.
+3. Move ~i3status.config~ to ~$HOME/.config/i3status/config~.
+4. Launch i3 and everything should work out of the box.
+
+ The only exception are the audio keybindings which you'll need to change if you don't use Pulse Audio.
+ 
+* Config
+** Note on format
+All the configurations were written in this README as a literate document.
+They can be read easily on Github or inside Emacs.
+The configs have also been tangled into the actual config files which can be used directly.
+
+** Version
+We tell i3 that we are using version 4:
+#+BEGIN_SRC conf :tangle i3.config
+  # i3 config file (v4)
+#+END_SRC
+
+** Modifier key
+i3 uses a primary modifier key.
+We set Mod4 (Super/Windows key) as the primary modifier.
+Mod1 (Alt) is also an alternative but it conflicts with many other applications.
+
+#+BEGIN_SRC conf :tangle i3.config
+  set $mod Mod4
+#+END_SRC
+
+One big weakness of i3 is that the modifier key is captured by the window manager always.
+This means that you can't ever use the modifier in applications.
+Ratpoison is capable of this because the window manager interface is accessed through a key chord.
+
+** Modes
+It is not widely understand that i3 is primarily a modal window manager.
+We spend the majority of our time in default mode but other modes can be used.
+Modes also allow us to reduce the number of keybindings we have to memorize.
+In many ways, modes work like [[https://github.com/abo-abo/hydra][Abo-abo's hydra keybindinds in emacs]].
+You have full control of when a mode exits or persists.
+
+When we exit a mode, we want to return to default mode.
+We can define a variable for that:
+
+#+BEGIN_SRC conf :tangle i3.config
+  set $mode_default mode "default"
+#+END_SRC
+
+You may wonder why we have something so redundant.
+This is in case you want execute something else everytime you return to default mode.
+For example if you use the red-screen shell script to adjust gamma while you are in a mode, you will want to return the gamma to normal upon returning to default mode.
+
+** Fonts
+Font for window titles. 
+Will also be used by the bar unless a different font is used in the bar {} block below.
+The number represents the font size.
+
+#+BEGIN_SRC conf :tangle no
+  font pango:monospace 8
+#+END_SRC
+  
+This alternative font is widely installed, provides lots of unicode glyphs, right-to-left text rendering and scalability on retina/hidpi displays (thanks to pango).
+
+#+BEGIN_SRC conf :tangle i3.config
+  font pango:DejaVu Sans Mono 8
+#+END_SRC
+
+** Bar
+i3bar displays a workspace bar which can contain the output of i3status (system information).
+It also shows the workspaces, mode information and a system tray.
+
+#+BEGIN_SRC conf :tangle i3.config
+    bar {
+            # This calls i3status which can display system information.
+            status_command i3status
+            # i3bar uses same font as titlebars unless you specify a different font here.
+            # This is helpful if you want the font size to differ.
+            # font pango:monospace 8
+            # You can change the symbol which separates the components of i3status
+            separator_symbol "|"
+            # You can also have the bar appear on the bottom
+            position bottom
+            # Make the bar only visible while pressing the modifier key
+            mode hide
+            hidden_state hide
+            modifier $mod
+    }
+#+END_SRC
+
+*** i3status
+[[https://i3wm.org/i3status/manpage.html][i3status]] can be configured separately if you want it omit or add information to the output.
+
+#+BEGIN_SRC conf :tangle i3status.config
+  # It is important that this file is edited as UTF-8.
+  # The following line should contain a sharp s:
+  # ß
+  # If the above line is not correctly displayed, fix your editor first!
+
+  # We don't use vim folds here since the configuration of the statusbar is very simple.
+
+  general {
+          output_format = "i3bar"
+          colors = true
+          interval = 5
+  }
+#+END_SRC
+
+Use this section to activate certain blocks and arrange them as you like.
+There is always a notification tray as the last block for icons.
+You will notice, I've omitted many blocks which are present in the default config.
+This is because I assume the use of the Network Manager Applet to manage connections.
+You could consider doing the same using the pulse audio applet (~pasystray~ on Fedora) to replace the volume block.
+
+#+BEGIN_SRC conf :tangle i3status.config
+  order += "volume master"
+  order += "battery 0"
+  order += "cpu_usage"
+  order += "memory"
+  order += "tztime local"
+
+  volume master {
+          format = "♪: %volume"
+          format_muted = "♪: muted (%volume)"
+          device = "default"
+          mixer = "Master"
+          mixer_idx = 0
+  }
+
+  battery 0 {
+          # format = "%status %percentage %remaining"
+          format = "%status %percentage"
+          format_down = "No battery"
+          status_chr = "[+] BAT:"
+          status_bat = "[-] BAT:"
+          status_full = "[#] BAT:"
+          low_threshold = 30
+          threshold_type = percentage
+  }
+
+  cpu_usage {
+          format = "CPU: %usage"
+          max_threshold = "95"
+          degraded_threshold = "90"
+  }
+
+  memory {
+          format = "MEM: %used [%available]"
+  }
+
+  tztime local {
+          format = "%Y-%m-%d %H:%M"
+  }
+#+END_SRC
+
+** Workspaces
+Define names for default workspaces for which we configure key bindings later on.
+We use variables to avoid repeating the names in multiple places.
+
+#+BEGIN_SRC conf :tangle i3.config
+  set $ws1 "1"
+  set $ws2 "2"
+  set $ws3 "3"
+  set $ws4 "4"
+  set $ws5 "5"
+  set $ws6 "6"
+  set $ws7 "7"
+  set $ws8 "8"
+  set $ws9 "9"
+  set $ws10 "10"
+#+END_SRC
+
+You could give these arbitrary labels like ~set $ws1 "1: emacs"~.
+
+We can also dynamically rename them and then use something like dmenu to parse them for fancy operations.
+
+#+BEGIN_SRC conf :tangle no
+  bindsym $mod+w exec i3-input -F 'rename workspace to "%s"' -P 'New name: '
+#+END_SRC
+
+If you only have a few workspaces, I think this is overkill.
+I try to keep my windows and workspaces limited so I stay focused.
+
+We can bind a key to cycle through workspaces on all displays.
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+n workspace next
+  bindsym $mod+p workspace prev
+  # alternatively for just on one output
+  # bindsym $mod+n workspace next_on_output
+  # bindsym $mod+p workspace prev_on_output
+#+END_SRC
+
+Switch to a specific workspace:
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+1 workspace $ws1
+  bindsym $mod+2 workspace $ws2
+  bindsym $mod+3 workspace $ws3
+  bindsym $mod+4 workspace $ws4
+  bindsym $mod+5 workspace $ws5
+  bindsym $mod+6 workspace $ws6
+  bindsym $mod+7 workspace $ws7
+  bindsym $mod+8 workspace $ws8
+  bindsym $mod+9 workspace $ws9
+  bindsym $mod+10 workspace $ws10
+#+END_SRC
+
+Pressing the same workspace button bounces back to the previous workspace.
+
+#+BEGIN_SRC conf :tangle i3.config
+  workspace_auto_back_and_forth yes
+#+END_SRC
+
+Move focused container to next or previous workspace:
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+Shift+n move container to workspace next; workspace next
+  bindsym $mod+Shift+p move container to workspace prev; workspace prev
+#+END_SRC
+
+Move to a particular workspace:
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+Shift+1 move container to workspace $ws1
+  bindsym $mod+Shift+2 move container to workspace $ws2
+  bindsym $mod+Shift+3 move container to workspace $ws3
+  bindsym $mod+Shift+4 move container to workspace $ws4
+  bindsym $mod+Shift+5 move container to workspace $ws5
+  bindsym $mod+Shift+6 move container to workspace $ws6
+  bindsym $mod+Shift+7 move container to workspace $ws7
+  bindsym $mod+Shift+8 move container to workspace $ws8
+  bindsym $mod+Shift+9 move container to workspace $ws9
+  bindsym $mod+Shift+10 move container to workspace $ws10
+#+END_SRC
+
+We also should consider multiple outputs.
+We add a mode to handle outputs.
+We add to keybinding to move the current workspace to the next output.
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+m move workspace to output next
+  bindsym $mod+Shift+m move workspace to output prev
+#+END_SRC
+
+** Scratchpad
+The i3 scratchpad is a hidden workspace which can contain any number of windows that can be summoned anywhere.
+It is kind of like globally iconified (minimized) windows.
+You could access a particular window but for simplicity, we just use it as a stack.
+
+We bind keys to move a window to the scratchpad and toggle the top window from the scratchpad stack:
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+Shift+x move scratchpad
+  bindsym $mod+x scratchpad show
+#+END_SRC
+
+You could easily replicate a dropdown terminal using this functionality.
+If you want to access a particular window from a scratchpad, use i3's filtering capabilities (example with Pavucontrol's mixer):
+
+#+BEGIN_SRC conf :tangle no
+  bindsym $mod+a [title="Volume Control"] scratchpad show
+#+END_SRC
+
+** Layout
+There are many different layouts available and the default is a tiling layout.
+I actually prefer a tabbed layout which keeps track of all open windows while keeping them mostly fullscreen.
+One workspace is designated for floating windows in particular.
+
+#+BEGIN_SRC conf :tangle i3.config
+  workspace_layout tabbed
+#+END_SRC
+
+Rather than give a bunch of keybindings for toggling the layouts, we can use i3's modes to hold the options:
+
+#+BEGIN_SRC conf :tangle i3.config
+  set $mode_layout "[s]tacking [t]abbed s[p]lit"  
+#+END_SRC
+
+This mode will exit after any input from the user.
+We just tell it to run ~$mode_default~ after our command.
+
+#+BEGIN_SRC conf :tangle i3.config
+  mode $mode_layout { 
+          # These bindings trigger as soon as you enter the layout mode.
+          bindsym s layout stacking; $mode_default
+          bindsym t layout tabbed; $mode_default
+          bindsym p layout toggle split; $mode_default
+
+          # back to normal: Enter or Escape or q or $mod+y
+          bindsym Return $mode_default
+          bindsym Escape $mode_default
+          bindsym q      $mode_default
+          bindsym $mod+y $mode_default
+  }
+#+END_SRC
+
+** Launchers
+i3 ships with Suckless' dmenu as well as a wrapper around it called ~i3-dmenu-desktop~ which only displays applications which actually have a ~.desktop~ file.
+This conveniently removes many options that default dmenu would display.
+~i3-dmenu-desktop~ can be configured like dmenu by using the --dmenu flag.
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu="dmenu -b -i -l 5"
+#+END_SRC
+
+We can use ~dmenu_run~ to launch arbitrary shell commands as well.
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+Shift+d exec --no-startup-id dmenu_run -b -i -l 5 -p "/bin/sh -c "
+#+END_SRC
+
+Check the man page for dmenu to see the various options.
+You might consider just using ~dmenu_run~ depending on your needs.
+
+** General keybindings
+You can create general keybindings but I try to avoid having lots of bindings.
+Your focus should be on what you're doing in i3 instead of memorizing tons of chords.
+The keybindings that we do keep in default mode are the most commonly used actions.
+
+We can set the terminal we want to use to a variable.
+By default it checks for a terminal from a list.
+If you prefer another terminal emulator, change it here.
+You can also set a keybinding to start a terminal.
+
+#+BEGIN_SRC conf :tangle i3.config
+  set $term i3-sensible-terminal
+  bindsym $mod+Return exec $term
+#+END_SRC
+
+As an example, you could define a keybinding that uses the filtering capabilities of i3 to launch xterm with python ready for calculations in a floating window.
+
+#+BEGIN_SRC conf :tangle no
+  for_window [title="pycalc"] floating enable
+  bindsym $mod+Shift+c exec xterm -title pycalc -e python3 -i -c 'from math import *'
+#+END_SRC
+
+Kill focused window
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+Shift+q kill
+#+END_SRC
+
+Use Mouse+$mod to drag floating windows to their wanted position.
+
+#+BEGIN_SRC conf :tangle i3.config
+  floating_modifier $mod
+#+END_SRC
+
+We want to hide the bar and only make it visible while pressing the mod key.
+If you need the bar permanently visible:
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+Shift+f bar mode toggle
+#+END_SRC
+
+** Window movement and organization
+Changing focus:
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+o  focus next
+  bindsym $mod+Shift+o focus prev
+
+  # alternatively, you can use the cursor keys:
+  bindsym $mod+Left  focus left
+  bindsym $mod+Down  focus down
+  bindsym $mod+Up    focus up
+  bindsym $mod+Right focus right
+#+END_SRC
+
+Moving focused window:
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+Shift+Left  move left
+  bindsym $mod+Shift+Down  move down
+  bindsym $mod+Shift+Up    move up
+  bindsym $mod+Shift+Right move right
+#+END_SRC
+
+By default new windows won't have any border but we could toggle the border with simple command.
+By using ~hide_edge_border~ and the smart option, we hide borders anyway whenever there is only a single window on the screen.
+
+#+BEGIN_SRC conf :tangle i3.config
+  set $borderWidth 2
+  default_border pixel 0
+  #bindsym $mod+b border toggle $borderWidth
+  hide_edge_borders smart
+#+END_SRC
+
+The split bindings determine where the next new client will open in a tiling workspace.
+They are useless outside it.
+
+#+BEGIN_SRC conf :tangle no
+  # horizontal split
+  bindsym $mod+b split h
+
+  # vertical split
+  bindsym $mod+v split v
+#+END_SRC
+
+Fullscreen mode can be toggled but fullscreen windows cannot be cycled within a single workspace like in ratpoison.
+If you keep one window per workspace, there is no issue here.
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+f fullscreen toggle
+#+END_SRC
+
+Toggle tiling/floating.
+You should set the maximum floating size to the size of your primary display minus your borders (and titles) or smaller to be safe.
+You can leave the minimum size unconstrained.
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+Shift+space floating toggle
+  floating_minimum_size -1 x -1
+  floating_maximum_size 1000 x 600
+#+END_SRC
+
+Toggle "sticky" on a floating window so it appears on all of your workspaces.
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+s sticky toggle
+#+END_SRC
+
+Change focus between tiling / floating windows:
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+space focus mode_toggle
+#+END_SRC
+
+Focus the parent or child container:
+This is confusing to use in practice and hardly every worth the complexity involved.
+
+#+BEGIN_SRC conf :tangle no
+  bindsym $mod+Shift+c focus parent
+  bindsym $mod+c focus child
+#+END_SRC
+
+** Resize mode
+Note that you can also use the mouse in default mode for this.
+
+#+BEGIN_SRC conf :tangle i3.config
+  set $mode_resize "RESIZE [h] -width [l] +width [j] -height [k] +height"
+#+END_SRC
+
+Now we define the mode itself:
+
+#+BEGIN_SRC conf :tangle i3.config
+  mode $mode_resize { 
+          # These bindings trigger as soon as you enter the resize mode.
+          bindsym h resize shrink width  10 px or 10 ppt
+          bindsym j resize grow   height 10 px or 10 ppt
+          bindsym k resize shrink height 10 px or 10 ppt
+          bindsym l resize grow   width  10 px or 10 ppt
+
+          # same bindings, but for the arrow keys
+          bindsym Left  resize shrink width  10 px or 10 ppt
+          bindsym Down  resize grow   height 10 px or 10 ppt
+          bindsym Up    resize shrink height 10 px or 10 ppt
+          bindsym Right resize grow   width  10 px or 10 ppt
+
+          # back to normal: Enter or Escape or q or $mod+r
+          bindsym Return $mode_default
+          bindsym Escape $mode_default
+          bindsym q      $mode_default
+          bindsym $mod+r $mode_default
+  }
+#+END_SRC
+
+** Session manager mode
+
+#+BEGIN_SRC conf :tangle i3.config
+  set $mode_session "[r]eload config re[s]tart session [e]xit i3"
+#+END_SRC
+
+#+BEGIN_SRC conf :tangle i3.config
+  mode $mode_session { 
+          # These bindings trigger as soon as you enter the session mode. 
+          bindsym r reload
+          bindsym s restart
+          bindsym e exec "i3-nagbar -t warning \
+          -m 'Do you really want to exit i3? This will end your X session.'\
+          -B 'Yes, exit i3' 'i3-msg exit'"
+
+          # back to normal: Enter or Escape or Shift+e or $mod+r
+          bindsym Return       $mode_default
+          bindsym Escape       $mode_default
+          bindsym q            $mode_default
+          bindsym $mod+Shift+e $mode_default
+  }
+#+END_SRC
+
+** COMMENT Marks
+We can mark windows and jump to them or swap them with others.
+
+#+BEGIN_SRC conf :tangle i3.config
+  set $mode_mark "[m]ark [r]ecall [s]ummon s[w]ap"  
+#+END_SRC
+
+This mode is different than the previous two because we need exit after any input from the user.
+We just tell it to run ~$mode_default~ after our command.
+
+#+BEGIN_SRC conf :tangle i3.config
+  mode $mode_mark {
+          # These bindings trigger as soon as you enter the mark mode.
+          # This mode always exits and then calls the i3-input which actually handles the rest.
+          # mark window
+          bindsym m $mode_default; exec i3-input -F 'mark %s' -l 1 -P 'Mark: '
+          # jump to mark
+          bindsym r $mode_default; exec i3-input -F '[con_mark="%s"] focus' -l 1 -P 'Recall: '
+          # move mark to current workspace
+          bindsym s $mode_default; exec i3-input -F '[con_mark="%s"] move workspace current' -l 1 -P 'Summon: '
+          # swap mark with current window
+          bindsym w $mode_default; exec i3-input -F 'swap container with mark %s' -l 1 -P 'Swap: '
+        
+          # back to normal: Enter or Escape or q or $mod+y
+          bindsym Return $mode_default
+          bindsym Escape $mode_default
+          bindsym q      $mode_default
+          bindsym $mod+m $mode_default
+  }
+#+END_SRC
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+m mode $mode_mark
+#+END_SRC
+
+** Volume mode
+I use Pulse Audio and pactl to control my audio.
+This commands are set with that in mind but it should not be hard to modify them for your setup.
+If you keyboard has dedicated audio keys, you can bind them in default mode if you prefer.
+They would be something like this: ~XF86AudioRaiseVolume~.
+
+#+BEGIN_SRC conf :tangle i3.config
+  set $mode_volume "[j] -vol [k] +vol [m]ute mi[x]er"
+#+END_SRC
+
+This mode is different than the previous two because we need exit after any input from the user.
+We just tell it to run ~$mode_default~ after our command.
+
+#+BEGIN_SRC conf :tangle i3.config
+  mode $mode_volume { 
+          bindsym j exec pactl set-sink-volume 0 -5% && pactl set-sink-mute 0
+          bindsym k exec pactl set-sink-volume 0 +5% && pactl set-sink-mute 0
+          bindsym m exec pactl set-sink-mute 0 toggle; $mode_default
+          bindsym x exec pavucontrol; $mode_default
+
+          # back to normal: Enter or Escape or y or $mod+r
+          bindsym Return $mode_default
+          bindsym Escape $mode_default
+          bindsym q      $mode_default
+          bindsym $mod+a $mode_default
+  }
+#+END_SRC
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+a mode $mode_volume
+#+END_SRC
+
+** Command mode
+This is a useful parent mode from which you can access the other major modes.
+
+#+BEGIN_SRC conf :tangle i3.config
+  set $mode_command "[r]esize [s]ession [l]ayout [m]ark [v]olume"
+#+END_SRC
+
+#+BEGIN_SRC confq :tangle i3.config
+  mode $mode_command { 
+          bindsym r mode $mode_resize
+          bindsym s mode $mode_session
+          bindsym l mode $mode_layout 
+          bindsym m mode $mode_mark
+          bindsym v mode $mode_volume
+
+          # back to normal: Enter or Escape or y or $mod+r
+          bindsym Return $mode_default
+          bindsym Escape $mode_default
+          bindsym q      $mode_default
+          bindsym $mod+g $mode_default
+  }
+#+END_SRC
+
+#+BEGIN_SRC conf :tangle i3.config
+  bindsym $mod+g mode $mode_command
+#+END_SRC
